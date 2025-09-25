@@ -185,7 +185,11 @@ std::pair<std::vector<std::string>, std::vector<std::string>> ListFolderFiles(co
 
     while ((ptr = readdir(dir)) != nullptr) {
         string filename = ptr->d_name;
+#ifdef WIN32
+        if (!IsFolderExist(path + "/" + filename)) {
+#else
         if (ptr->d_type != 4) {
+#endif
             if (!need_file)
                 continue;
             ret.first.emplace_back(filename);
