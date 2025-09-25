@@ -103,23 +103,15 @@ std::string ReplaceString(const std::string &str, const std::string &src, const 
 
 std::string Upper(const std::string &str) {
     std::string upper = str;
-#ifdef _WIN32
-    std::transform(upper.begin(), upper.end(), upper.begin(),  std::toupper);
-#else
     std::transform(upper.begin(), upper.end(), upper.begin(),
         [](unsigned char c) -> unsigned char { return std::toupper(c); });
-#endif
     return upper;
 }
 
 std::string Lower(const std::string &str) {
     std::string lower = str;
-#ifdef _WIN32
-    std::transform(lower.begin(), lower.end(), lower.begin(), std::tolower);
-#else
     std::transform(lower.begin(), lower.end(), lower.begin(),
         [](unsigned char c) -> unsigned char { return std::tolower(c); });
-#endif
     return lower;
 }
 
