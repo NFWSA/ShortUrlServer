@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     ShortUrlMgr mgr;
     sn::ServerConfig cfg{
         .data_path_ = "data/",
-        .webpage_html_ = FileUtil::LoadFile("webpage_html"),
+        .webpage_html_ = FileUtil::LoadFile("webpage.html"),
         .save_internal_ = 60,
         .save_async_ = false,
         .hash_width_ = 6,
