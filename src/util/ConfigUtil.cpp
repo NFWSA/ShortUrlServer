@@ -4,6 +4,7 @@
 #include "util/FileUtil.h"
 
 #include <map>
+#include <string>
 
 static const std::map<std::string, std::string> g_empty_map;
 
@@ -70,47 +71,220 @@ ConfigMap::ConfigMap(const std::string &file_path_or_content, bool is_filename) 
 }
 ConfigMap::~ConfigMap() {}
 
-bool ConfigMap::ReadConfigBool(const std::string &key, const std::string &field) const {
-    bool ret = false;
+bool ConfigMap::ReadConfigBool(const std::string &key, const bool default_val, const std::string &field) const {
+    bool ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-int ConfigMap::ReadConfigInt(const std::string &key, const std::string &field) const {
-    int ret = 0;
+int ConfigMap::ReadConfigInt(const std::string &key, const int default_val, const std::string &field) const {
+    int ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-long ConfigMap::ReadConfigLong(const std::string &key, const std::string &field) const {
-    long ret = 0;
+long ConfigMap::ReadConfigLong(const std::string &key, const long default_val, const std::string &field) const {
+    long ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-double ConfigMap::ReadConfigDouble(const std::string &key, const std::string &field) const {
-    double ret = 0;
+long long ConfigMap::ReadConfigLLong(const std::string &key, const long long default_val, const std::string &field) const {
+    long long ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-std::string ConfigMap::ReadConfigString(const std::string &key, const std::string &field) const {
-    std::string ret;
+unsigned long ConfigMap::ReadConfigULong(const std::string &key, const unsigned long default_val, const std::string &field) const {
+    unsigned long ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-std::set<std::string> ConfigMap::ReadConfigSet(const std::string &key, const std::string &delimiter, const std::string &field) const {
-    std::set<std::string> ret;
+unsigned long long ConfigMap::ReadConfigULLong(const std::string &key, const unsigned long long default_val, const std::string &field) const {
+    unsigned long long ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
 
-std::vector<std::string> ConfigMap::ReadConfigVector(const std::string &key, const std::string &delimiter, const std::string &field) const {
-    std::vector<std::string> ret;
+float ConfigMap::ReadConfigFloat(const std::string &key, const float default_val, const std::string &field) const {
+    float ret = default_val;
     TryReadConfig(ret, key, field);
     return ret;
 }
+
+double ConfigMap::ReadConfigDouble(const std::string &key, const double default_val, const std::string &field) const {
+    double ret = default_val;
+    TryReadConfig(ret, key, field);
+    return ret;
+}
+
+long double ConfigMap::ReadConfigLDouble(const std::string &key, const long double default_val, const std::string &field) const {
+    long double ret = default_val;
+    TryReadConfig(ret, key, field);
+    return ret;
+}
+
+std::string ConfigMap::ReadConfigString(const std::string &key, const std::string &default_val, const std::string &field) const {
+    std::string ret = default_val;
+    TryReadConfig(ret, key, field);
+    return ret;
+}
+
+std::set<std::string> ConfigMap::ReadConfigSet(const std::string &key, const std::set<std::string> &default_val,
+        const std::string &delimiter, const std::string &field) const {
+    std::set<std::string> ret = default_val;
+    TryReadConfig(ret, key, field);
+    return ret;
+}
+
+std::vector<std::string> ConfigMap::ReadConfigVector(const std::string &key, const std::vector<std::string> &default_val,
+        const std::string &delimiter, const std::string &field) const {
+    std::vector<std::string> ret = default_val;
+    TryReadConfig(ret, key, field);
+    return ret;
+}
+
+bool ConfigMap::TryReadConfig(std::int8_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    long exp_val = 0;
+    auto ret = StringUtil::TryStrToLong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg int8 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::int16_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    long exp_val = 0;
+    auto ret = StringUtil::TryStrToLong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg int16 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::int32_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    long exp_val = 0;
+    auto ret = StringUtil::TryStrToLong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg int32 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::int64_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    long long exp_val = 0;
+    auto ret = StringUtil::TryStrToLLong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg int64 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::uint8_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    unsigned long exp_val = 0;
+    auto ret = StringUtil::TryStrToULong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg uint8 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::uint16_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    unsigned long exp_val = 0;
+    auto ret = StringUtil::TryStrToULong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg uint16 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::uint32_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    unsigned long exp_val = 0;
+    auto ret = StringUtil::TryStrToULong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg uint32 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(std::uint64_t &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    unsigned long long exp_val = 0;
+    auto ret = StringUtil::TryStrToULLong(field_val, exp_val);
+    if (ret) {
+        val = exp_val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg uint64 " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+
+#if __WORDSIZE != 64
+bool ConfigMap::TryReadConfig(long &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    auto ret = StringUtil::TryStrToLong(field_val, val);
+    if (ret) {
+        LOGUTIL_LOG_I() << "[CFG] read cfg long " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(unsigned long &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    auto ret = StringUtil::TryStrToULong(field_val, val);
+    if (ret) {
+        LOGUTIL_LOG_I() << "[CFG] read cfg unsigned long " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+#else
+bool ConfigMap::TryReadConfig(long long &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    auto ret = StringUtil::TryStrToLLong(field_val, val);
+    if (ret) {
+        LOGUTIL_LOG_I() << "[CFG] read cfg long long " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+bool ConfigMap::TryReadConfig(unsigned long long &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    auto ret = StringUtil::TryStrToULLong(field_val, val);
+    if (ret) {
+        LOGUTIL_LOG_I() << "[CFG] read cfg unsigned long long " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+#endif
 
 bool ConfigMap::TryReadConfig(bool &val, const std::string &key, const std::string &field) const {
     std::string field_val;
@@ -123,24 +297,13 @@ bool ConfigMap::TryReadConfig(bool &val, const std::string &key, const std::stri
     return ret;
 }
 
-bool ConfigMap::TryReadConfig(int &val, const std::string &key, const std::string &field) const {
+bool ConfigMap::TryReadConfig(float &val, const std::string &key, const std::string &field) const {
     std::string field_val;
     if (!TryReadConfigImpl(field_val, key, field))
         return false;
-    auto ret = StringUtil::TryStrToInt(field_val, val);
+    auto ret = StringUtil::TryStrToFloat(field_val, val);
     if (ret) {
-        LOGUTIL_LOG_I() << "[CFG] read cfg int " << field << (field.empty() ? "" : ":") << key << " = " << val;
-    }
-    return ret;
-}
-
-bool ConfigMap::TryReadConfig(long &val, const std::string &key, const std::string &field) const {
-    std::string field_val;
-    if (!TryReadConfigImpl(field_val, key, field))
-        return false;
-    auto ret = StringUtil::TryStrToLong(field_val, val);
-    if (ret) {
-        LOGUTIL_LOG_I() << "[CFG] read cfg long " << field << (field.empty() ? "" : ":") << key << " = " << val;
+        LOGUTIL_LOG_I() << "[CFG] read cfg double " << field << (field.empty() ? "" : ":") << key << " = " << val;
     }
     return ret;
 }
@@ -150,6 +313,17 @@ bool ConfigMap::TryReadConfig(double &val, const std::string &key, const std::st
     if (!TryReadConfigImpl(field_val, key, field))
         return false;
     auto ret = StringUtil::TryStrToDouble(field_val, val);
+    if (ret) {
+        LOGUTIL_LOG_I() << "[CFG] read cfg double " << field << (field.empty() ? "" : ":") << key << " = " << val;
+    }
+    return ret;
+}
+
+bool ConfigMap::TryReadConfig(long double &val, const std::string &key, const std::string &field) const {
+    std::string field_val;
+    if (!TryReadConfigImpl(field_val, key, field))
+        return false;
+    auto ret = StringUtil::TryStrToLDouble(field_val, val);
     if (ret) {
         LOGUTIL_LOG_I() << "[CFG] read cfg double " << field << (field.empty() ? "" : ":") << key << " = " << val;
     }
@@ -193,65 +367,6 @@ bool ConfigMap::TryReadConfigImpl(std::string &val, const std::string &key, cons
         return false;
     val = val_it->second;
     return true;
-}
-
-
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val, const std::string &key, std::string &val) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        val = val_it->second;
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << val;
-        return true;
-    }
-    return false;
-}
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val,
-        const std::string &key, std::vector<std::string> &val, const std::string &delimiter) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        val = StringUtil::SplitStringVec(val_it->second, delimiter);
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << StringUtil::VecToString(val);
-        return true;
-    }
-    return false;
-}
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val,
-        const std::string &key, std::set<std::string> &val, const std::string &delimiter) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        val = StringUtil::SplitStringSet(val_it->second, delimiter);
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << StringUtil::SetToString(val);
-        return true;
-    }
-    return false;
-}
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val, const std::string &key, bool &val) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        auto &cmp_val = val_it->second;
-        val = cmp_val == "true";
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << (val ? "true" : "false");
-        return true;
-    }
-    return false;
-}
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val, const std::string &key, int &val) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        val = StringUtil::StrToInt(val_it->second);
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << val;
-        return true;
-    }
-    return false;
-}
-bool ReadConfigKey(const std::map<std::string, std::string> &key2val, const std::string &key, double &val) {
-    auto val_it = key2val.find(key);
-    if (val_it != key2val.end()) {
-        val = StringUtil::StrToDouble(val_it->second);
-        LOGUTIL_LOG_I() << "[CFG] change config " << key << " = " << val;
-        return true;
-    }
-    return false;
 }
 
 } /* namespace ConfigUtil */

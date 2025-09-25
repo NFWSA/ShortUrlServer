@@ -128,27 +128,68 @@ extern NumberRange<double> ParseDoubleRanges(const std::string &str, const std::
 
 extern std::string Format(const std::string &format, const std::vector<std::string> &fields = {});
 
-extern bool TryStrToBool(const std::string &str, bool &val);
-extern bool TryStrToInt(const std::string &str, int &val);
-extern bool TryStrToLong(const std::string &str, long &val);
-extern bool TryStrToDouble(const std::string &str, double &val);
 
-extern bool   StrToBool(  const std::string &str, const bool default_val = false);
-extern int    StrToInt(   const std::string &str, const int default_val = 0);
-extern long   StrToLong(  const std::string &str, const long default_val = 0l);
-extern double StrToDouble(const std::string &str, const double default_val = 0.);
+extern bool TryStrToBool(   const std::string &str, bool &val);
 
-extern long   SToL_Log(const std::string &str, const std::string &file, int line, const long default_val = 0l,
-    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool throw_excp = true);
-extern double SToD_Log(const std::string &str, const std::string &file, int line, const double default_val = 0.,
-    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool throw_excp = true);
+extern bool TryStrToInt(    const std::string &str, int &val);
+extern bool TryStrToLong(   const std::string &str, long &val);
+extern bool TryStrToLLong(  const std::string &str, long long &val);
+
+extern bool TryStrToULong(  const std::string &str, unsigned long &val);
+extern bool TryStrToULLong( const std::string &str, unsigned long long &val);
+
+extern bool TryStrToFloat(  const std::string &str, float &val);
+extern bool TryStrToDouble( const std::string &str, double &val);
+extern bool TryStrToLDouble(const std::string &str, long double &val);
+
+
+extern bool               StrToBool(            const std::string &str, const bool default_val = false);
+
+extern int                StrToInt(             const std::string &str, const int default_val = 0);
+extern long               StrToLong(            const std::string &str, const long default_val = 0l);
+extern long long          StrToLongLong(        const std::string &str, const long long default_val = 0ll);
+
+extern unsigned long      StrToUnsignedLong(    const std::string &str, const unsigned long default_val = 0ul);
+extern unsigned long long StrToUnsignedLongLong(const std::string &str, const unsigned long long default_val = 0ull);
+
+extern float              StrToFloat(           const std::string &str, const float default_val = 0.f);
+extern double             StrToDouble(          const std::string &str, const double default_val = 0.);
+extern long double        StrToLongDouble(      const std::string &str, const long double default_val = 0.);
+
+
+extern int                SToI_Log(const std::string &str, const std::string &file, int line, const int default_val = 0,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+extern long               SToL_Log(const std::string &str, const std::string &file, int line, const long default_val = 0l,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+extern long long          SToLL_Log(const std::string &str, const std::string &file, int line, const long long default_val = 0ll,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+
+extern unsigned long      SToUL_Log(const std::string &str, const std::string &file, int line, const unsigned long default_val = 0ul,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+extern unsigned long long SToULL_Log(const std::string &str, const std::string &file, int line, const unsigned long long default_val = 0ull,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+
+extern float              SToF_Log(const std::string &str, const std::string &file, int line, const float default_val = 0.f,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+extern double             SToD_Log(const std::string &str, const std::string &file, int line, const double default_val = 0.,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
+extern long double        SToLD_Log(const std::string &str, const std::string &file, int line, const long double default_val = 0.,
+    const std::string &desc = "", const std::vector<std::string> &fields = {}, bool need_log = true, bool throw_excp = true);
 
 extern std::string DoubleToString(double dbl, int width = -1);
 
 } /* namespace StringUtil */
 } /* namespace sn */
 
-#define StringUtil_STOL_LOG(str, ...) sn::StringUtil::stol_log((str), __FILE__, __LINE__, __VA_ARGS__)
-#define StringUtil_STOD_LOG(str, ...) sn::StringUtil::stod_log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOI_LOG(str, ...) sn::StringUtil::SToI_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOL_LOG(str, ...) sn::StringUtil::SToL_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOLL_LOG(str, ...) sn::StringUtil::SToLL_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+
+#define StringUtil_STOUL_LOG(str, ...) sn::StringUtil::SToUL_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOULL_LOG(str, ...) sn::StringUtil::SToULL_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+
+#define StringUtil_STOF_LOG(str, ...) sn::StringUtil::SToF_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOD_LOG(str, ...) sn::StringUtil::SToD_Log((str), __FILE__, __LINE__, __VA_ARGS__)
+#define StringUtil_STOLD_LOG(str, ...) sn::StringUtil::SToLD_Log((str), __FILE__, __LINE__, __VA_ARGS__)
 
 #endif // SN_SHORT_URL_SERVER_STRING_UTIL_H

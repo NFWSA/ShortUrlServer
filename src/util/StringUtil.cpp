@@ -243,14 +243,14 @@ bool TryStrToBool(const std::string &str, bool &val) {
 }
 
 bool TryStrToInt(const std::string &str, int &val) {
-    long real_val = 0;
-    if (TryStrToLong(str, real_val)) {
-        val = real_val;
+    try {
+        val = std::stoi(str);
         return true;
+    }
+    catch (std::exception &e) {
     }
     return false;
 }
-
 bool TryStrToLong(const std::string &str, long &val) {
     try {
         val = std::stol(str);
@@ -260,7 +260,44 @@ bool TryStrToLong(const std::string &str, long &val) {
     }
     return false;
 }
+bool TryStrToLLong(const std::string &str, long long &val) {
+    try {
+        val = std::stoll(str);
+        return true;
+    }
+    catch (std::exception &e) {
+    }
+    return false;
+}
 
+bool TryStrToULong(const std::string &str, unsigned long &val) {
+    try {
+        val = std::stoul(str);
+        return true;
+    }
+    catch (std::exception &e) {
+    }
+    return false;
+}
+bool TryStrToULLong(const std::string &str, unsigned long long &val) {
+    try {
+        val = std::stoull(str);
+        return true;
+    }
+    catch (std::exception &e) {
+    }
+    return false;
+}
+
+bool TryStrToFloat(const std::string &str, float &val) {
+    try {
+        val = std::stof(str);
+        return true;
+    }
+    catch (std::exception &e) {
+    }
+    return false;
+}
 bool TryStrToDouble(const std::string &str, double &val) {
     try {
         val = std::stod(str);
@@ -270,43 +307,160 @@ bool TryStrToDouble(const std::string &str, double &val) {
     }
     return false;
 }
+bool TryStrToLDouble(const std::string &str, long double &val) {
+    try {
+        val = std::stold(str);
+        return true;
+    }
+    catch (std::exception &e) {
+    }
+    return false;
+}
+
 
 bool StrToBool(const std::string &str, const bool default_val) {
-    bool ret = false;
+    bool ret = default_val;
     if (TryStrToBool(str, ret))
         return ret;
     return default_val;
 }
 
 int StrToInt(const std::string &str, const int default_val) {
-    int ret = 0;
+    int ret = default_val;
     if (TryStrToInt(str, ret))
         return ret;
     return default_val;
 }
-
 long StrToLong(const std::string &str, const long default_val) {
-    long ret = false;
+    long ret = default_val;
     if (TryStrToLong(str, ret))
         return ret;
     return default_val;
 }
-
-double StrToDouble(const std::string &str, const double default_val) {
-    double ret = false;
-    if (TryStrToDouble(str, ret))
+long long StrToLLong(const std::string &str, const long long default_val) {
+    long long ret = default_val;
+    if (TryStrToLLong(str, ret))
         return ret;
     return default_val;
 }
 
+unsigned long StrToULong(const std::string &str, const unsigned long default_val) {
+    unsigned long ret = default_val;
+    if (TryStrToULong(str, ret))
+        return ret;
+    return default_val;
+}
+unsigned long long StrToULLong(const std::string &str, const unsigned long long default_val) {
+    unsigned long long ret = default_val;
+    if (TryStrToULLong(str, ret))
+        return ret;
+    return default_val;
+}
+
+float StrToFloat(const std::string &str, const float default_val) {
+    float ret = default_val;
+    if (TryStrToFloat(str, ret))
+        return ret;
+    return default_val;
+}
+double StrToDouble(const std::string &str, const double default_val) {
+    double ret = default_val;
+    if (TryStrToDouble(str, ret))
+        return ret;
+    return default_val;
+}
+long double StrToLongDouble(const std::string &str, const long double default_val) {
+    long double ret = default_val;
+    if (TryStrToLDouble(str, ret))
+        return ret;
+    return default_val;
+}
+
+
+int SToI_Log(const std::string &str, const std::string &file, int line, const int default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stoi(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stoi exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
 long SToL_Log(const std::string &str, const std::string &file, int line, const long default_val,
-        const std::string &desc, const std::vector<std::string> &fields, bool throw_excp) {
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
     try {
         return std::stol(str);
     }
     catch (std::exception &e) {
-        sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
-            << "stol exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stol exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
+long long SToLL_Log(const std::string &str, const std::string &file, int line, const long long default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stoll(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stoll exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
+unsigned long SToUL_Log(const std::string &str, const std::string &file, int line, const unsigned long default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stoul(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stoul exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
+unsigned long long SToULL_Log(const std::string &str, const std::string &file, int line, const unsigned long long default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stoull(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stoull exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
+float SToF_Log(const std::string &str, const std::string &file, int line, const float default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stof(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stof exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
         if (throw_excp)
             throw e;
         return default_val;
@@ -314,13 +468,29 @@ long SToL_Log(const std::string &str, const std::string &file, int line, const l
 }
 
 double SToD_Log(const std::string &str, const std::string &file, int line, const double default_val,
-        const std::string &desc, const std::vector<std::string> &fields, bool throw_excp) {
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
     try {
         return std::stod(str);
     }
     catch (std::exception &e) {
-        sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
-            << "stod exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stod exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
+        if (throw_excp)
+            throw e;
+        return default_val;
+    }
+}
+
+long double SToLD_Log(const std::string &str, const std::string &file, int line, const long double default_val,
+        const std::string &desc, const std::vector<std::string> &fields, bool need_log, bool throw_excp) {
+    try {
+        return std::stold(str);
+    }
+    catch (std::exception &e) {
+        if (need_log)
+            sn::LoggerUtil::SingleLogMessage(sn::LoggerUtil::LogLevel::LOG_LV_ERROR, file, line).stream()
+                << "stold exception:\"" << e.what() << " str:\"" << str << "\"\n desc:" << Format(desc, fields);
         if (throw_excp)
             throw e;
         return default_val;
