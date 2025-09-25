@@ -218,21 +218,20 @@
             <h3 class="font-medium text-gray-800 mb-3 flex items-center">
                 <i class="fa fa-server mr-2 text-primary"></i>服务器信息
             </h3>
-            <p>当前连接到: <span class="font-medium">localhost:8080</span></p>
-            <p class="mt-1">短链接跳转格式: <code class="bg-gray-100 px-2 py-1 rounded">localhost:8080/j/[hash]</code></p>
+            <p>当前连接到: <span id="cur-server-show" class="font-medium">localhost:8080</span></p>
+            <p class="mt-1">短链接跳转格式: <code id="pattern-show" class="bg-gray-100 px-2 py-1 rounded">localhost:8080/j/[hash]</code></p>
         </div>
 
         <!-- 页脚 -->
         <footer class="mt-8 text-center text-gray-500 text-sm">
-            <p>短链接管理工具 &copy; 2023</p>
+            <p>短链接管理工具 &copy; 2025</p>
         </footer>
     </div>
 
+    <script src="/static/js/server-config.js"></script>
     <script>
-        // 服务器基础URL
-        // const API_BASE_URL = 'http://localhost:8080';
-        const API_BASE_URL = '';
-        const SHOW_API_BASE_URL = 'http://localhost:8080';
+        document.querySelector('#cur-server-show').innerText = SHOW_API_BASE_URL;
+        document.querySelector('#pattern-show').innerText = SHOW_API_BASE_URL + '/j/[hash]';
 
         // 选项卡切换功能
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -344,7 +343,7 @@
                 const data = await response.json();
 
                 if (data.code === 0) {
-                    const shortUrl = `${SHOW_API_BASE_URL}/j/${data.data}`;
+                    const shortUrl = `http://${SHOW_API_BASE_URL}/j/${data.data}`;
                     showResult(resultContainer, '短链接创建成功', true);
 
                     // 显示短链接

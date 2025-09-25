@@ -30,6 +30,7 @@ namespace sn {
 
 struct BaseServerConfig {
     std::string log_path_;
+    std::string bind_ip_;
     int max_num_;
     int port_;
 

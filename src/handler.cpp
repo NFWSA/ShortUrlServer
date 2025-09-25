@@ -93,6 +93,21 @@ DEFINE_REQUEST_HANDLER(HdlShortUrlWebpage) {
     res.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK);
     res.send() << inst_->webpage_html_;
 }
+DEFINE_REQUEST_HANDLER(HdlShortUrlCfgGet) {
+    auto js = StringUtil::Format(R"(
+// 服务器基础URL
+const API_BASE_URL = '%';
+const SHOW_API_BASE_URL = '%:%';
+)", { "", (inst_->bind_ip_ == "::1" ? "localhost" : inst_->bind_ip_), to_string(inst_->port_) });
+    res.setContentType("text/javascript");
+    res.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK);
+    res.send() << js;
+}
+DEFINE_REQUEST_HANDLER(HdlShortUrlStatic) {
+    res.setContentType("text/html");
+    res.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK);
+    res.send() << inst_->webpage_html_;
+}
 
 DEFINE_REQUEST_HANDLER(HdlShortUrlInfo) {
     QuickResponse(res, ServerErrorCode::ALL_OK, "", false);

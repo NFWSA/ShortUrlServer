@@ -37,11 +37,13 @@ int main(int argc, char *argv[])
     };
     {
         cfg.log_path_ = "log/";
+        cfg.bind_ip_ = "::1";
         cfg.max_num_ = -1;
         cfg.port_ = 8080;
 
         auto cfg_map = ConfigUtil::ConfigMap("short-url-server.ini");
         cfg_map.TryReadConfig(cfg.log_path_, "log_path");
+        cfg_map.TryReadConfig(cfg.bind_ip_, "bind_ip");
         cfg_map.TryReadConfig(cfg.max_num_, "max_num");
         cfg_map.TryReadConfig(cfg.port_, "port");
 
@@ -63,6 +65,7 @@ int main(int argc, char *argv[])
     hdl_factory->HandlePost<HdlShortUrlGet>("/get");
     hdl_factory->HandleGet<HdlShortUrlJump>("/j/*");
     hdl_factory->HandleGet<HdlShortUrlWebpage>("/webpage");
+    hdl_factory->HandleGet<HdlShortUrlCfgGet>("/static/js/server-config.js");
     // hdl_factory->HandleGet<HdlShortUrlWebpage>("/static/**");
     // hdl_factory->HandlePost<DCHdlRunBydTaskSync>("/keys");
     // hdl_factory->HandlePost<DCHdlRunBydTaskSync>("/clear");
@@ -73,8 +76,10 @@ int main(int argc, char *argv[])
     server_params->setTimeout(Poco::Timespan(120, 0));
     // server_params->setKeepAlive(true);
     // server_params->setKeepAliveTimeout(Poco::Timespan(60, 0));
-    // server_params->setServerName("0.0.0.0:" + to_string(cfg.port_));
-    Poco::Net::HTTPServer server(hdl_factory, cfg.port_, server_params);
+    server_params->setServerName(cfg.bind_ip_ + ":" + to_string(cfg.port_));
+    Poco::Net::SocketAddress address(cfg.bind_ip_, cfg.port_);
+    Poco::Net::ServerSocket socket(address);
+    Poco::Net::HTTPServer server(hdl_factory, socket, server_params);
     cfg.svr_ = &server;
     // auto filter = new CustomConnectionFilter();
     // server.setConnectionFilter(filter);

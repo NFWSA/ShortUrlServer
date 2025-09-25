@@ -11,6 +11,8 @@ DECLARE_REQUEST_HANDLER(HdlShortUrlDel, sn::ServerConfig);
 DECLARE_REQUEST_HANDLER(HdlShortUrlGet, sn::ServerConfig);
 DECLARE_REQUEST_HANDLER(HdlShortUrlJump, sn::ServerConfig);
 DECLARE_REQUEST_HANDLER(HdlShortUrlWebpage, sn::ServerConfig);
+DECLARE_REQUEST_HANDLER(HdlShortUrlCfgGet, sn::ServerConfig);
+DECLARE_REQUEST_HANDLER(HdlShortUrlStatic, sn::ServerConfig);
 DECLARE_REQUEST_HANDLER(HdlShortUrlInfo, sn::ServerConfig);
 
 } /* namespace sn */
