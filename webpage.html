@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短链接管理工具</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        danger: '#EF4444',
+                        neutral: '#6B7280',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .btn-hover {
+                @apply transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5;
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <!-- 标题区域 -->
+        <div class="text-center mb-10">
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-gray-800 mb-2">短链接管理工具</h1>
+            <p class="text-neutral text-lg">轻松创建、查询和管理您的短链接</p>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="bg-white rounded-xl p-6 card-shadow mb-8">
+            <!-- 操作选项卡 -->
+            <div class="flex flex-wrap border-b mb-6">
+                <button id="create-tab" class="tab-btn active py-2 px-4 font-medium text-primary border-b-2 border-primary">
+                    <i class="fa fa-plus-circle mr-2"></i>创建短链接
+                </button>
+                <button id="query-tab" class="tab-btn py-2 px-4 font-medium text-neutral hover:text-primary">
+                    <i class="fa fa-search mr-2"></i>查询链接
+                </button>
+                <button id="delete-tab" class="tab-btn py-2 px-4 font-medium text-neutral hover:text-primary">
+                    <i class="fa fa-trash mr-2"></i>删除链接
+                </button>
+            </div>
+
+            <!-- 创建短链接表单 -->
+            <div id="create-form" class="tab-content active">
+                <div class="mb-4">
+                    <label for="long-url" class="block text-sm font-medium text-gray-700 mb-1">长链接 URL</label>
+                    <div class="flex">
+                        <input
+                            type="url"
+                            id="long-url"
+                            placeholder="https://example.com/very/long/url"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg input-focus"
+                            required
+                        >
+                        <button
+                            id="create-btn"
+                            class="bg-primary text-white px-6 py-2 rounded-r-lg btn-hover"
+                        >
+                            创建
+                        </button>
+                    </div>
+                </div>
+
+                <div id="create-result" class="hidden mt-4 p-4 rounded-lg">
+                    <div class="flex items-start">
+                        <div id="create-success-icon" class="hidden text-secondary mr-3 mt-1">
+                            <i class="fa fa-check-circle text-xl"></i>
+                        </div>
+                        <div id="create-error-icon" class="hidden text-danger mr-3 mt-1">
+                            <i class="fa fa-exclamation-circle text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p id="create-message" class="text-sm mb-2"></p>
+                            <div id="short-url-container" class="hidden flex items-center">
+                                <input
+                                    type="text"
+                                    id="short-url"
+                                    readonly
+                                    class="flex-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-l-lg text-sm"
+                                >
+                                <button
+                                    id="copy-btn"
+                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-r-lg transition-colors"
+                                >
+                                    <i class="fa fa-copy"></i> 复制
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 查询链接表单 -->
+            <div id="query-form" class="tab-content hidden">
+                <div class="mb-4">
+                    <label for="hash-query" class="block text-sm font-medium text-gray-700 mb-1">短链接 Hash</label>
+                    <div class="flex">
+                        <input
+                            type="text"
+                            id="hash-query"
+                            placeholder="例如: f9c53e9d7284"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg input-focus"
+                            required
+                        >
+                        <button
+                            id="query-btn"
+                            class="bg-secondary text-white px-6 py-2 rounded-r-lg btn-hover"
+                        >
+                            查询
+                        </button>
+                    </div>
+                </div>
+
+                <div id="query-result" class="hidden mt-4 p-4 rounded-lg">
+                    <div class="flex items-start">
+                        <div id="query-success-icon" class="hidden text-secondary mr-3 mt-1">
+                            <i class="fa fa-check-circle text-xl"></i>
+                        </div>
+                        <div id="query-error-icon" class="hidden text-danger mr-3 mt-1">
+                            <i class="fa fa-exclamation-circle text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p id="query-message" class="text-sm mb-2"></p>
+                            <div id="original-url-container" class="hidden">
+                                <label class="block text-xs text-gray-500 mb-1">原始链接:</label>
+                                <input
+                                    type="text"
+                                    id="original-url"
+                                    readonly
+                                    class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 删除链接表单 -->
+            <div id="delete-form" class="tab-content hidden">
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">删除方式</label>
+                    <div class="flex space-x-4 mb-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="delete-type" value="hash" checked class="text-primary">
+                            <span class="ml-2 text-sm">通过 Hash 删除</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="delete-type" value="url" class="text-primary">
+                            <span class="ml-2 text-sm">通过 URL 删除</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="delete-value" class="block text-sm font-medium text-gray-700 mb-1" id="delete-label">
+                        短链接 Hash
+                    </label>
+                    <div class="flex">
+                        <input
+                            type="text"
+                            id="delete-value"
+                            placeholder="例如: f9c53e9d7284"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg input-focus"
+                            required
+                        >
+                        <button
+                            id="delete-btn"
+                            class="bg-danger text-white px-6 py-2 rounded-r-lg btn-hover"
+                        >
+                            删除
+                        </button>
+                    </div>
+                </div>
+
+                <div id="delete-result" class="hidden mt-4 p-4 rounded-lg">
+                    <div class="flex items-start">
+                        <div id="delete-success-icon" class="hidden text-secondary mr-3 mt-1">
+                            <i class="fa fa-check-circle text-xl"></i>
+                        </div>
+                        <div id="delete-error-icon" class="hidden text-danger mr-3 mt-1">
+                            <i class="fa fa-exclamation-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <p id="delete-message" class="text-sm"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务器信息 -->
+        <div class="bg-white rounded-xl p-5 card-shadow text-sm text-gray-600">
+            <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                <i class="fa fa-server mr-2 text-primary"></i>服务器信息
+            </h3>
+            <p>当前连接到: <span class="font-medium">localhost:8080</span></p>
+            <p class="mt-1">短链接跳转格式: <code class="bg-gray-100 px-2 py-1 rounded">localhost:8080/j/[hash]</code></p>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>短链接管理工具 &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // 服务器基础URL
+        // const API_BASE_URL = 'http://localhost:8080';
+        const API_BASE_URL = '';
+        const SHOW_API_BASE_URL = 'http://localhost:8080';
+
+        // 选项卡切换功能
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有活动状态
+                tabBtns.forEach(b => {
+                    b.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
+                    b.classList.add('text-neutral');
+                });
+
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+
+                // 设置当前活动状态
+                btn.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
+                btn.classList.remove('text-neutral');
+
+                const tabId = btn.id.replace('-tab', '-form');
+                document.getElementById(tabId).classList.remove('hidden');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 删除方式切换
+        const deleteTypeRadios = document.querySelectorAll('input[name="delete-type"]');
+        const deleteInput = document.getElementById('delete-value');
+        const deleteLabel = document.getElementById('delete-label');
+
+        deleteTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'hash') {
+                    deleteLabel.textContent = '短链接 Hash';
+                    deleteInput.placeholder = '例如: f9c53e9d7284';
+                    deleteInput.type = 'text';
+                } else {
+                    deleteLabel.textContent = '长链接 URL';
+                    deleteInput.placeholder = '例如: https://example.com/url';
+                    deleteInput.type = 'url';
+                }
+            });
+        });
+
+        // 显示结果的通用函数
+        function showResult(container, message, isSuccess, data = null) {
+            const messageEl = container.querySelector('p[id$="-message"]');
+            const successIcon = container.querySelector('[id$="-success-icon"]');
+            const errorIcon = container.querySelector('[id$="-error-icon"]');
+
+            // 重置状态
+            container.classList.remove('hidden', 'bg-green-50', 'bg-red-50', 'border', 'border-green-200', 'border-red-200');
+            successIcon.classList.add('hidden');
+            errorIcon.classList.add('hidden');
+
+            // 设置消息
+            messageEl.textContent = message;
+
+            // 设置样式和图标
+            if (isSuccess) {
+                container.classList.add('bg-green-50', 'border', 'border-green-200');
+                successIcon.classList.remove('hidden');
+            } else {
+                container.classList.add('bg-red-50', 'border', 'border-red-200');
+                errorIcon.classList.remove('hidden');
+            }
+
+            // 显示结果容器
+            container.classList.remove('hidden');
+
+            return { messageEl, successIcon, errorIcon };
+        }
+
+        // 创建短链接
+        document.getElementById('create-btn').addEventListener('click', async () => {
+            const longUrl = document.getElementById('long-url').value.trim();
+            const resultContainer = document.getElementById('create-result');
+            const shortUrlContainer = document.getElementById('short-url-container');
+            const shortUrlInput = document.getElementById('short-url');
+
+            if (!longUrl) {
+                showResult(resultContainer, '请输入有效的URL', false);
+                return;
+            }
+
+            try {
+                // 显示加载状态
+                showResult(resultContainer, '正在创建短链接...', true);
+                shortUrlContainer.classList.add('hidden');
+
+                // 发送请求
+                const response = await fetch(`${API_BASE_URL}/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: longUrl }),
+                    mode: 'cors', // 显式指定跨域模式（浏览器默认，但明确写更稳妥）
+                });
+
+                // 处理服务器可能返回的非200状态（如404、500）
+                if (!response.ok) {
+                    throw new Error(`服务器响应错误: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.code === 0) {
+                    const shortUrl = `${SHOW_API_BASE_URL}/j/${data.data}`;
+                    showResult(resultContainer, '短链接创建成功', true);
+
+                    // 显示短链接
+                    shortUrlInput.value = shortUrl;
+                    shortUrlContainer.classList.remove('hidden');
+                } else {
+                    showResult(resultContainer, `创建失败: ${data.msg || '未知错误'}`, false);
+                    shortUrlContainer.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('创建短链接错误:', error);
+                showResult(resultContainer, '无法连接到服务器，请检查服务器是否运行', false);
+                shortUrlContainer.classList.add('hidden');
+            }
+        });
+
+        // 复制短链接
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            const shortUrlInput = document.getElementById('short-url');
+            shortUrlInput.select();
+            document.execCommand('copy');
+
+            // 显示复制成功提示
+            const originalText = document.getElementById('copy-btn').innerHTML;
+            document.getElementById('copy-btn').innerHTML = '<i class="fa fa-check"></i> 已复制';
+
+            setTimeout(() => {
+                document.getElementById('copy-btn').innerHTML = originalText;
+            }, 2000);
+        });
+
+        // 查询链接
+        document.getElementById('query-btn').addEventListener('click', async () => {
+            const hash = document.getElementById('hash-query').value.trim();
+            const resultContainer = document.getElementById('query-result');
+            const originalUrlContainer = document.getElementById('original-url-container');
+            const originalUrlInput = document.getElementById('original-url');
+
+            if (!hash) {
+                showResult(resultContainer, '请输入短链接Hash', false);
+                return;
+            }
+
+            try {
+                // 显示加载状态
+                showResult(resultContainer, '正在查询链接...', true);
+                originalUrlContainer.classList.add('hidden');
+
+                // 发送请求
+                const response = await fetch(`${API_BASE_URL}/get`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ hash: hash }),
+                    mode: 'cors', // 显式指定跨域模式（浏览器默认，但明确写更稳妥）
+                });
+
+                const data = await response.json();
+
+                if (data.code === 0) {
+                    showResult(resultContainer, '查询成功', true);
+
+                    // 显示原始链接
+                    originalUrlInput.value = data.data;
+                    originalUrlContainer.classList.remove('hidden');
+                } else {
+                    showResult(resultContainer, `查询失败: ${data.msg || '未找到该Hash'}`, false);
+                    originalUrlContainer.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('查询链接错误:', error);
+                showResult(resultContainer, '无法连接到服务器，请检查服务器是否运行', false);
+                originalUrlContainer.classList.add('hidden');
+            }
+        });
+
+        // 删除链接
+        document.getElementById('delete-btn').addEventListener('click', async () => {
+            const deleteType = document.querySelector('input[name="delete-type"]:checked').value;
+            const value = document.getElementById('delete-value').value.trim();
+            const resultContainer = document.getElementById('delete-result');
+
+            if (!value) {
+                showResult(resultContainer, `请输入${deleteType === 'hash' ? '短链接Hash' : '长链接URL'}`, false);
+                return;
+            }
+
+            try {
+                // 显示加载状态
+                showResult(resultContainer, '正在删除链接...', true);
+
+                // 准备请求数据
+                const data = deleteType === 'hash'
+                    ? { hash: value }
+                    : { url: value };
+
+                // 发送请求
+                const response = await fetch(`${API_BASE_URL}/del`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    mode: 'cors', // 显式指定跨域模式（浏览器默认，但明确写更稳妥）
+                });
+
+                const responseData = await response.json();
+
+                if (responseData.code === 0) {
+                    showResult(resultContainer, '链接删除成功', true);
+                    // 清空输入框
+                    document.getElementById('delete-value').value = '';
+                } else {
+                    showResult(resultContainer, `删除失败: ${responseData.msg || '未找到该链接'}`, false);
+                }
+            } catch (error) {
+                console.error('删除链接错误:', error);
+                showResult(resultContainer, '无法连接到服务器，请检查服务器是否运行', false);
+            }
+        });
+
+        // 为输入框添加回车键触发功能
+        document.getElementById('long-url').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('create-btn').click();
+            }
+        });
+
+        document.getElementById('hash-query').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('query-btn').click();
+            }
+        });
+
+        document.getElementById('delete-value').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('delete-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
