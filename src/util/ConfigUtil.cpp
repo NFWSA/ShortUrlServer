@@ -360,7 +360,7 @@ bool ConfigMap::TryReadConfig(std::vector<std::string> &val, const std::string &
 }
 
 bool ConfigMap::TryReadConfigImpl(std::string &val, const std::string &key, const std::string &field) const {
-    auto field_map_it = cfg_.find(key);
+    auto field_map_it = cfg_.find(field);
     auto &field_map = field_map_it == cfg_.end() ? g_empty_map : field_map_it->second;
     auto val_it = field_map.find(key);
     if (val_it == field_map.end())
