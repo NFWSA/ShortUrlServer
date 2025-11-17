@@ -233,6 +233,13 @@
         document.querySelector('#cur-server-show').innerText = SHOW_API_BASE_URL;
         document.querySelector('#pattern-show').innerText = SHOW_API_BASE_URL + '/j/[hash]';
 
+        function FoundRealHash(str) {
+            const spl_pos = str.lastIndexOf('/');
+            if (spl_pos >= 0 && spl_pos < str.length)
+                return str.substr(spl_pos + 1);
+            return str
+        }
+
         // 选项卡切换功能
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -377,7 +384,7 @@
 
         // 查询链接
         document.getElementById('query-btn').addEventListener('click', async () => {
-            const hash = document.getElementById('hash-query').value.trim();
+            const hash = FoundRealHash(document.getElementById('hash-query').value.trim());
             const resultContainer = document.getElementById('query-result');
             const originalUrlContainer = document.getElementById('original-url-container');
             const originalUrlInput = document.getElementById('original-url');
@@ -438,7 +445,7 @@
 
                 // 准备请求数据
                 const data = deleteType === 'hash'
-                    ? { hash: value }
+                    ? { hash: FoundRealHash(value) }
                     : { url: value };
 
                 // 发送请求
